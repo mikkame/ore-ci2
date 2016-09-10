@@ -4,8 +4,14 @@ require './helper.rb'
 require 'json'
 
 get '/' do
-   key = deployKey
+  key = deployKey
   'deploy key '+ key
+end
+
+get '/test' do
+  command = 'cd ' + __dir__ + '/workdir; git status'
+  systemu command, :out => out
+  out
 end
 
 post '/push' do

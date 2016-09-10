@@ -9,8 +9,7 @@ get '/' do
 end
 
 post '/push' do
-  return request.body.read
-  payload = JSON.parse(params['payload'])
+  payload = JSON.parse(request.body.read)
   repo = payload['repository']['full_name']
   before = payload['before']
   after = payload['after']

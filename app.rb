@@ -2,6 +2,7 @@ require 'sinatra'
 require 'sinatra/reloader'
 require './helper.rb'
 require 'json'
+require 'systemu'
 
 get '/' do
   key = deployKey
@@ -9,6 +10,7 @@ get '/' do
 end
 
 get '/test' do
+  out = ''
   command = 'cd ' + __dir__ + '/workdir; git status'
   systemu command, :out => out
   out

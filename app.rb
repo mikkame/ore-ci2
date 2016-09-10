@@ -9,14 +9,9 @@ get '/' do
   'deploy key '+ key
 end
 
-get '/test' do
-  out = ''
-  command = 'cd ' + __dir__ + '/workdir; git status'
-  systemu command, :out => out
-  out
-end
 
 post '/push' do
+  systemu 'cd '+__dir__+';sh once.sh'
   payload = JSON.parse(request.body.read)
   repo = payload['repository']['full_name']
   before = payload['before']

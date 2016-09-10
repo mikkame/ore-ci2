@@ -9,7 +9,8 @@ get '/' do
 end
 
 post '/push' do
-  payload = JSON.parse(params[:payload])
+  return "#{params}"
+  payload = JSON.parse(params['payload'])
   repo = payload['repository']['full_name']
   before = payload['before']
   after = payload['after']

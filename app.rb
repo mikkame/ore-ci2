@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sinatra/reloader'
 require './helper.rb'
+require 'json'
 
 get '/' do
    key = deployKey
@@ -9,11 +10,11 @@ end
 
 post '/push' do
   payload = JSON.parse(params[:payload])
-  repo = payload[:repository][:full_name]
-  before = payload[:before]
-  after = payload[:after]
+  repo = payload['repository']['full_name']
+  before = payload['before']
+  after = payload['after']
   Helper.test(repo, before, after)
-  render text: 'done'
+  'done'
 end
 
 

@@ -8,9 +8,10 @@ get '/' do
 end
 
 post '/push' do
-  repo = params[:repository][:full_name]
-  before = params[:before]
-  after = params[:after]
+  payload = JSON.parse(params[:payload])
+  repo = payload[:repository][:full_name]
+  before = payload[:before]
+  after = payload[:after]
   Helper.test(repo, before, after)
   render text: 'done'
 end

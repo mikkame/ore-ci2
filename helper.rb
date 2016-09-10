@@ -41,13 +41,29 @@ class Helper
     end
 
     self.diff(before, after).each do |file_name|
-      return self.rubocop(repo, file_name, hashs)
+      start = self.diffstart(before, after,file_name)
+      self.rubocop(repo, file_name, hashs, start)
     end
     FileUtils.rm_rf(__dir__+'/workdir/')
     Dir.mkdir(__dir__+'/workdir/')
   end
-
-  def self.rubocop(repo, file_name, hashs)
+  def self.diffstart(before ,after ,file)
+    out = ''
+    command = 'cd ' + __dir__ + '/workdir; git --no-pager diff -U10000 ' + (before.shellescape) + ' ' + (after.shellescape)+ ' ' + file.shellescape
+    systemu command, :out => out
+    out.split(/\n/).each_with_index do |row, index|
+      if index < 5 then
+        next
+      end
+      if row[0] == '-' || row[0] == '+' then
+        puts row[0]
+        return index-6
+      end
+    end
+    return
+  end
+  def self.rubocop(repo, file_name, hashs, start)
+    p '#'+file_name+'#'
     out = ''
     command = 'cd ' + __dir__ + '/workdir; rubocop  ' + (file_name.shellescape)
     systemu command, :out => out
@@ -55,9 +71,20 @@ class Helper
       if index < 5
         next
       end
-      path, position, col, level, message = row.match(/.+?:(\d):(\d): (.): (.+)/).to_a
+      if index % 3 != 2
+        next
+      end
+
+      matched, path, position, col, level, message = row.match(/(.+?):(\d+):(\d+): (.): (.+)/).to_a
+      if position.nil?
+        next
+      end
+
       sha = self.blame(file_name, position)
       if hashs.include? sha
+        position = position.to_i - start.to_i
+        p '----'
+        p position
         self.comment(repo, sha, message, position, path)
       end
     end
@@ -65,7 +92,7 @@ class Helper
 
   def self.comment(repo, sha, message, position, path)
     client = Octokit::Client.new(:access_token => ENV['GITHUB_TOKEN'])
-    client.create_commit_comment(repo, sha, message, path, position)
+    p client.create_commit_comment(repo, sha, message, path, position,position)
 
   end
 end

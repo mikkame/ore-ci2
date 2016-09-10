@@ -1,5 +1,3 @@
-p 'hello world'
+p 'hello this is test'
 
-1+1
-
-a =1235
+100+500+600

@@ -1,3 +1,4 @@
-p 'hello this is test'
-
-100+500+600
+1+1
+2+2
+3+3
+puts 'this is dart code'
